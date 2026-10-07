@@ -16,6 +16,7 @@ chip:{n:'Chiptune',e:'👾',o:[['square',1,0,1]],a:.003,dec:.15,sus:.7,rel:.05,f
 };
 let ctx,master,mc,analyser,stream,buf,timer,raw=[],cur=null,cand=-2,candN=0,t0=0,rec=false,keyRoot=null,playT0=0,playEnd=0,raf,live,beats=[],prevR=0,lastHit=-1,fbuf,PRO=false,V=[],sel=-1,playIdx=-1;
 const $=id=>document.getElementById(id);
+function say(t){let m=$('msg');if(!m){m=document.createElement('div');m.id='msg';m.className='mu';m.style.cssText='color:var(--ac2);margin-top:10px';$('hz').parentNode.parentNode.appendChild(m);}m.textContent=t;}
 function ensure(){
   if(!ctx){ctx=new (window.AudioContext||window.webkitAudioContext)();newMaster();}
   if(ctx.state!=='running')ctx.resume();
@@ -42,7 +43,7 @@ function voice(k,m,t,d,out){
   });
   lp.connect(g);g.connect(out);
 }
-
+ 
 /* ---- pitch detection: normalised autocorrelation (McLeod-style) ---- */
 function detect(b,sr){
   let e=0;for(let i=0;i<b.length;i++)e+=b[i]*b[i];
@@ -59,11 +60,11 @@ function detect(b,sr){
   }
   return -1;
 }
-
+ 
 async function start(){
-  ensure();$('msg').textContent='';
+  ensure();say('');
   try{stream=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:false,noiseSuppression:false,autoGainControl:false}});}
-  catch(e){$('msg').textContent='Microphone unavailable. Allow mic access, or open this page in its own browser tab.';return;}
+  catch(e){say('Microphone unavailable: '+(e&&e.name==='NotAllowedError'?'access was blocked. Click the lock icon in the address bar, allow the microphone, and reload.':'check that a mic is connected and the page is on https.'));return;}
   const src=ctx.createMediaStreamSource(stream);analyser=ctx.createAnalyser();analyser.fftSize=2048;analyser.smoothingTimeConstant=.2;src.connect(analyser);
   buf=new Float32Array(2048);fbuf=new Uint8Array(1024);beats=[];prevR=0;lastHit=-1;raw=[];cur=null;cand=-2;candN=0;t0=ctx.currentTime;rec=true;
   $('rec').textContent='■ Stop';$('rec').classList.add('on');
@@ -103,7 +104,7 @@ function liveSet(f){
   const T=ctx.currentTime;
   if(f>0){live.o.frequency.setTargetAtTime(f,T,.02);live.g.gain.setTargetAtTime(.12,T,.03);}else live.g.gain.setTargetAtTime(0,T,.03);
 }
-
+ 
 /* ---- key detection, snapping, quantising ---- */
 const MAJ=[0,2,4,5,7,9,11];
 function findKey(){
@@ -127,7 +128,7 @@ function notes(bpmv){
   });
   return out;
 }
-
+ 
 function noise(t,d,ty,f,gn){const n=Math.ceil(ctx.sampleRate*d),b=ctx.createBuffer(1,n,ctx.sampleRate),x=b.getChannelData(0);for(let i=0;i<n;i++)x[i]=Math.random()*2-1;const s=ctx.createBufferSource();s.buffer=b;const fl=ctx.createBiquadFilter();fl.type=ty;fl.frequency.value=f;const g=ctx.createGain();g.gain.setValueAtTime(gn,t);g.gain.exponentialRampToValueAtTime(.001,t+d);s.connect(fl);fl.connect(g);g.connect(master);s.start(t);}
 function tone(t,f0,f1,d,gn){const o=ctx.createOscillator(),g=ctx.createGain();o.frequency.setValueAtTime(f0,t);o.frequency.exponentialRampToValueAtTime(f1,t+d*.5);g.gain.setValueAtTime(gn,t);g.gain.exponentialRampToValueAtTime(.001,t+d);o.connect(g);g.connect(master);o.start(t);o.stop(t+d);}
 function drum(k,t){
@@ -137,7 +138,7 @@ function drum(k,t){
   else if(k==='taiko'){tone(t,120,55,.7,.8);noise(t,.15,'lowpass',400,.3);}
   else noise(t,1.1,'highpass',4500,.35);
 }
-
+ 
 const PRS=[[[0,'m'],[8,'M'],[3,'M'],[10,'M']],[[0,'m'],[5,'m'],[10,'M'],[8,'M']],[[0,'m'],[0,'m'],[8,'M'],[7,'M']],[[0,'m'],[10,'M'],[8,'M'],[7,'M']]];
 const ST={
 anime:{n:'Anime fight',sub:'Fast, driving, battle-ready',bpm:172,pr:PRS[0],k:'x..xx.x.x..xx.x.',s:'....x.......x...',h:'xxxxxxxxxxxxxxxx',t:'x.......x.......',b:'x.xxx.xxx.xxx.xx',c:'x..x..x.x..x..x.',ci:'pluck',cl:2,bl:1,mel:['lead','strings'],bi:'bass'},
@@ -224,7 +225,7 @@ $('mclose').onclick=()=>modal(false);
 ['grid','key'].forEach(i=>$(i).onchange=()=>draw(notes()));
 addEventListener('resize',()=>draw(notes()));
 refresh();draw([]);
-
+ 
 /* ---- piano roll ---- */
 function draw(ns,rt){
   const cv=$('roll'),dpr=devicePixelRatio||1,w=cv.clientWidth,h=cv.clientHeight;
