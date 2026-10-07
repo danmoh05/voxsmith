@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Voxsmith – hum it, hear it</title>
+<meta name="description" content="Hum, sing or beatbox into your mic and get five ready-to-play tunes, with instruments and beats you can edit.">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<header><div class="logo">Vox<span>smith</span></div><button id="plan" class="pill">Free · Go Pro</button></header>
+<main>
+<section class="card">
+ <div class="step">1 · Hum, sing or beatbox</div>
+ <div class="row" style="margin-top:12px"><button id="rec">● Record</button><div><div id="note">–</div><div class="mu" id="hz">Tap record and make some noise</div></div><span class="mu" id="keyname" style="margin-left:auto">Key: –</span></div>
+ <canvas id="roll"></canvas>
+ <details><summary>Fine-tune</summary><div class="row" style="margin-top:8px"><label><input type="checkbox" id="grid" checked> Fix timing</label><label><input type="checkbox" id="key" checked> Snap to key</label><label><input type="checkbox" id="mybeat" checked> Use my beatbox as drums</label><label><input type="checkbox" id="live"> Live monitor (headphones)</label><input type="hidden" id="bpm" value="100"></div></details>
+</section>
+<section><div class="row sp"><div class="step">2 · Pick a tune</div><button id="remix">↻ Remix</button></div><div id="tunes" class="grid"></div></section>
+<section id="studio" class="card" hidden></section>
+</main>
+<div class="ov" id="modal" hidden><div class="mdl"><h2>Voxsmith Pro</h2><div class="price">$3.49<span> / month</span></div>
+<ul><li>5 tunes rendered at once (Free: 2)</li><li>13 instruments (Free: 6)</li><li>All 8 demo beats to edit (Free: 3)</li><li>Longer 16-bar tracks (Free: 8)</li></ul>
+<div class="row"><button class="pri" id="upgrade">Unlock Pro (demo)</button><button id="mclose">Not now</button></div>
+<div class="mu">Billing isn't connected in this preview; the button just switches Pro on so you can try it.</div></div></div>
+<script src="js/app.js"></script>
+</body>
+</html>
